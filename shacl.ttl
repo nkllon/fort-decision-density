@@ -1,0 +1,72 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix fort: <https://nkllon/fort#> .
+@prefix req:  <https://nkllon/requirements#> .
+@prefix dec:  <https://nkllon/decision#> .
+@prefix scig: <https://nkllon/scig#> .
+
+#################################################################
+# SHACL Shapes for Decision Density & Perspectives
+#################################################################
+
+fort:SolutionShape a sh:NodeShape ;
+    sh:targetClass fort:Solution ;
+    rdfs:label "Solution basic quality shape" ;
+    sh:property [
+        sh:path fort:decisionDensity ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "decisionDensity must be a decimal between 0.0 and 1.0." ;
+    ] ;
+    sh:property [
+        sh:path fort:hasDecision ;
+        sh:minCount 1 ;
+        sh:message "A solution should have at least one decision." ;
+    ] ;
+    sh:property [
+        sh:path fort:implementsRequirement ;
+        sh:minCount 1 ;
+        sh:message "A solution should implement at least one requirement." ;
+    ] .
+
+fort:HighDecisionDensitySolutionShape a sh:NodeShape ;
+    sh:targetClass fort:Solution ;
+    rdfs:label "High-decision-density solution shape" ;
+    sh:property [
+        sh:path fort:decisionDensity ;
+        sh:minInclusive 0.9 ;
+        sh:message "High decision density solutions should have decisionDensity ≥ 0.9." ;
+    ] .
+
+fort:DecisionShape a sh:NodeShape ;
+    sh:targetClass fort:Decision ;
+    rdfs:label "Decision justification shape" ;
+    sh:property [
+        sh:path dec:justifiedBy ;
+        sh:minCount 1 ;
+        sh:message "Each decision SHOULD be justified by at least one requirement." ;
+    ] .
+
+fort:MultiPerspectiveDecisionShape a sh:NodeShape ;
+    sh:targetClass fort:Decision ;
+    rdfs:label "Multi-perspective decision shape" ;
+    sh:property [
+        sh:path dec:hasPerspectiveEvidence ;
+        sh:minCount 2 ;
+        sh:message "Decisions SHOULD have evidence from at least two perspectives to increase confidence." ;
+    ] .
+
+scig:SCIGProfileShape a sh:NodeShape ;
+    sh:targetClass scig:SCIGProfile ;
+    rdfs:label "SCIG profile shape" ;
+    sh:property [
+        sh:path scig:invalidStateGap ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:message "invalidStateGap should be a decimal between 0.0 and 1.0." ;
+    ] .

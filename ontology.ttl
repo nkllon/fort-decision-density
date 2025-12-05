@@ -1,0 +1,196 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+@prefix fort: <https://nkllon/fort#> .
+@prefix req:  <https://nkllon/requirements#> .
+@prefix dec:  <https://nkllon/decision#> .
+@prefix scig: <https://nkllon/scig#> .
+
+#################################################################
+# Ontology Header
+#################################################################
+
+fort:DecisionDensityModule a owl:Ontology ;
+    dct:title "Fort Decision Density & Multi-Perspective Confidence" ;
+    dct:description "A small Fort / Beast module capturing decision-density and multi-perspective confidence patterns, linked to SCIG." ;
+    dct:creator "Lou + Fort Beasts (with GPT-5.1 Thinking as Elmo-like agent)" ;
+    dct:created "2025-12-05"^^xsd:date ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# Core Classes
+#################################################################
+
+fort:Solution a owl:Class ;
+    rdfs:label "Solution" ;
+    rdfs:comment "An implemented or proposed solution bounded by requirements and decisions." .
+
+fort:Decision a owl:Class ;
+    rdfs:label "Decision" ;
+    rdfs:comment "A design or implementation choice that can be justified by requirements and perspectives." .
+
+fort:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "A need, constraint, or expectation that can justify one or more decisions." .
+
+fort:Perspective a owl:Class ;
+    rdfs:label "Perspective" ;
+    rdfs:comment "A lens or viewpoint from which a decision can be evaluated (discipline, stakeholder, dimension, agent, etc.)." .
+
+scig:SCIGProfile a owl:Class ;
+    rdfs:label "SCIG profile" ;
+    rdfs:comment "A profile describing the Systemic Continuous Invalid-state Gap for a solution or system." .
+
+#################################################################
+# Object Properties
+#################################################################
+
+fort:hasDecision a owl:ObjectProperty ;
+    rdfs:domain fort:Solution ;
+    rdfs:range fort:Decision ;
+    rdfs:label "has decision" ;
+    rdfs:comment "Links a solution to a decision that shapes it." .
+
+dec:justifiedBy a owl:ObjectProperty ;
+    rdfs:domain fort:Decision ;
+    rdfs:range fort:Requirement ;
+    rdfs:label "justified by" ;
+    rdfs:comment "Indicates that a decision is explicitly justified by a requirement." .
+
+dec:hasPerspectiveEvidence a owl:ObjectProperty ;
+    rdfs:domain fort:Decision ;
+    rdfs:range fort:Perspective ;
+    rdfs:label "has perspective evidence" ;
+    rdfs:comment "Indicates that a decision has been evaluated or supported from a given perspective." .
+
+fort:implementsRequirement a owl:ObjectProperty ;
+    rdfs:domain fort:Solution ;
+    rdfs:range fort:Requirement ;
+    rdfs:label "implements requirement" ;
+    rdfs:comment "Indicates that a solution is intended to satisfy or implement a requirement." .
+
+scig:hasSCIGProfile a owl:ObjectProperty ;
+    rdfs:domain fort:Solution ;
+    rdfs:range scig:SCIGProfile ;
+    rdfs:label "has SCIG profile" ;
+    rdfs:comment "Associates a solution with its SCIG profile (invalid-state gap assessment)." .
+
+#################################################################
+# Datatype Properties
+#################################################################
+
+fort:decisionDensity a owl:DatatypeProperty ;
+    rdfs:domain fort:Solution ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "decision density" ;
+    rdfs:comment "Fraction of a solution's decisions that are explicitly justified by requirements (0.0 - 1.0)." .
+
+fort:confidenceScore a owl:DatatypeProperty ;
+    rdfs:domain fort:Solution ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "confidence score" ;
+    rdfs:comment "A normalized confidence score (0.0 - 1.0) derived from decision density and multi-perspective coverage." .
+
+scig:invalidStateGap a owl:DatatypeProperty ;
+    rdfs:domain scig:SCIGProfile ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "invalid-state gap" ;
+    rdfs:comment "An estimate (0.0 - 1.0) of the fraction of the state space that is invalid or poorly controlled." .
+
+#################################################################
+# Design Patterns as Classes
+#################################################################
+
+fort:HighDecisionDensitySolution a owl:Class ;
+    rdfs:subClassOf fort:Solution ;
+    rdfs:label "High-decision-density solution" ;
+    rdfs:comment "A solution whose architectural decisions are mostly justified by explicit requirements (e.g., ≥ 0.9 decision density)." ;
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:intersectionOf (
+            fort:Solution
+            [ a owl:Restriction ;
+              owl:onProperty fort:decisionDensity ;
+              owl:allValuesFrom [
+                  a rdfs:Datatype ;
+                  owl:onDatatype xsd:decimal ;
+                  owl:withRestrictions ( [ xsd:minInclusive "0.9"^^xsd:decimal ] )
+              ]
+            ]
+        )
+    ] .
+
+fort:MultiPerspectiveDecision a owl:Class ;
+    rdfs:subClassOf fort:Decision ;
+    rdfs:label "Multi-perspective decision" ;
+    rdfs:comment "A decision that is supported or reviewed from two or more perspectives." ;
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:intersectionOf (
+            fort:Decision
+            [ a owl:Restriction ;
+              owl:onProperty dec:hasPerspectiveEvidence ;
+              owl:minCardinality "2"^^xsd:nonNegativeInteger
+            ]
+        )
+    ] .
+
+#################################################################
+# Linking to SCIG (qualitative pattern)
+#################################################################
+
+fort:SCIGReducedSolution a owl:Class ;
+    rdfs:subClassOf fort:Solution ;
+    rdfs:label "SCIG-reduced solution" ;
+    rdfs:comment "A solution where high decision density and multi-perspective decisions jointly reduce the SCIG invalid-state gap." .
+
+#################################################################
+# Simple Example Individuals
+#################################################################
+
+# Example requirements
+req:R1 a fort:Requirement ;
+    rdfs:label "Support 90% requirements-driven decisions" ;
+    dct:description "The architecture should be traceably justified by explicit requirements for at least 90% of its key decisions." .
+
+req:R2 a fort:Requirement ;
+    rdfs:label "Cover multiple perspectives" ;
+    dct:description "Key decisions must be reviewed from at least two distinct perspectives (e.g., UX, security, operations)." .
+
+# Example perspectives
+fort:UXPerspective a fort:Perspective ;
+    rdfs:label "UX perspective" .
+
+fort:SecurityPerspective a fort:Perspective ;
+    rdfs:label "Security perspective" .
+
+fort:OpsPerspective a fort:Perspective ;
+    rdfs:label "Operations perspective" .
+
+# Example solution and decisions
+fort:ExampleSolution a fort:Solution ;
+    rdfs:label "Example solution with decent decision density" ;
+    fort:hasDecision fort:D1, fort:D2 ;
+    fort:implementsRequirement req:R1, req:R2 ;
+    fort:decisionDensity "0.92"^^xsd:decimal ;
+    fort:confidenceScore "0.88"^^xsd:decimal .
+
+fort:D1 a fort:Decision , fort:MultiPerspectiveDecision ;
+    rdfs:label "Authentication strategy decision" ;
+    dec:justifiedBy req:R1, req:R2 ;
+    dec:hasPerspectiveEvidence fort:UXPerspective, fort:SecurityPerspective .
+
+fort:D2 a fort:Decision ;
+    rdfs:label "Deployment topology decision" ;
+    dec:justifiedBy req:R1 ;
+    dec:hasPerspectiveEvidence fort:OpsPerspective .
+
+fort:ExampleSCIGProfile a scig:SCIGProfile ;
+    rdfs:label "SCIG profile for ExampleSolution" ;
+    scig:invalidStateGap "0.12"^^xsd:decimal .
+
+fort:ExampleSolution scig:hasSCIGProfile fort:ExampleSCIGProfile .
