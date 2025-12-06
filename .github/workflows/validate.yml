@@ -16,20 +16,11 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install rdflib pyshacl
-      - name: Validate sample JSON-LD against SHACL
-        run: |
-          python - << 'PY'
-          from rdflib import Graph
-          from pyshacl import validate
-          data = Graph()
-          data.parse("examples/sample_score.json", format="json-ld")
-          shapes = Graph()
-          shapes.parse("goblin-shapes.ttl", format="turtle")
-          conforms, report_graph, report_text = validate(data_graph=data, shacl_graph=shapes, inference='rdfs', advanced=True)
-          print(report_text)
-          assert conforms, "SHACL validation failed"
-          PY
+          pip install .[dev]
+      - name: Validate sample score JSON-LD
+        run: python tools/validate_sample_score.py
+      - name: Validate sample TTL data
+        run: python -m goblin.validate --data samples/goblin-sample.ttl
   dot-check:
     name: Render DOT and check committed artifacts
     runs-on: ubuntu-latest
@@ -37,33 +28,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Graphviz
         run: sudo apt-get update && sudo apt-get install -y graphviz
-      - name: Render goblin-map
-        run: |
-          dot -Tsvg goblin-map.dot -o docs/goblin-map.svg.new
-          dot -Tpng goblin-map.dot -o docs/goblin-map.png.new
-      - name: Fail if diffs vs committed images
-        run: |
-          set -e
-          if ! cmp --silent docs/goblin-map.svg docs/goblin-map.svg.new; then
-            echo "docs/goblin-map.svg differs from generated. Please regenerate and commit."
-            exit 1
-          fi
-          if ! cmp --silent docs/goblin-map.png docs/goblin-map.png.new; then
-            echo "docs/goblin-map.png differs from generated. Please regenerate and commit."
-            exit 1
-          fi
+      - name: Check committed SVG
+        run: make dot-check
   docs-link:
     name: Verify docs links
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Check docs/kg.html references
-        run: |
-          set -e
-          test -f docs/goblin-map.svg
-          test -f docs/goblin-map.png
-          test -f goblin-ontology.ttl
-          test -f goblin-shapes.ttl
-          grep -q "goblin-map.svg" docs/kg.html
-          grep -q "goblin-ontology.ttl" docs/kg.html
-          grep -q "goblin-shapes.ttl" docs/kg.html
+        run: make docs-link

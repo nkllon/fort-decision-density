@@ -1,5 +1,21 @@
 version: "3.9"
 services:
+  python-sample-ttl:
+    image: python:3.11-slim
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: >
+      bash -lc "python -m pip install --no-cache-dir -q rdflib pyshacl graphviz && python -m goblin.validate --data samples/goblin-sample.ttl"
+
+  python-sample-jsonld:
+    image: python:3.11-slim
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: >
+      bash -lc "python -m pip install --no-cache-dir -q rdflib pyshacl && python tools/validate_sample_score.py"
+
   python-validate:
     image: python:3.11-slim
     working_dir: /workspace
@@ -33,7 +49,20 @@ services:
       apt-get update &&
       apt-get install -y --no-install-recommends graphviz diffutils &&
       dot -Tsvg goblin-map.dot -o docs/goblin-map.svg.new &&
-      cmp -s docs/goblin-map.svg docs/goblin-map.svg.new"
+      cmp -s docs/goblin-map.svg docs/goblin-map.svg.new &&
+      rm -f docs/goblin-map.svg.new"
+
+  docs-link:
+    image: debian:stable-slim
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: >
+      bash -lc "set -e && test -f docs/goblin-map.svg && test -f goblin-ontology.ttl && test -f goblin-shapes.ttl && grep -q 'goblin-map.svg' docs/kg.html && grep -q 'goblin-ontology.ttl' docs/kg.html && grep -q 'goblin-shapes.ttl' docs/kg.html"
+
+  webvowl-check:
+    image: curlimages/curl:8.8.0
+    command: -I --fail https://service.tib.eu/webvowl/
 
   js-package:
     image: node:20

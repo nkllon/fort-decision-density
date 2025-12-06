@@ -35,36 +35,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
-      - name: Validate SHACL on sample data
-        run: |
-          python -m goblin.validate --data samples/goblin-sample.ttl
-
-      - name: Validate shapes
-        run: |
-          python tools/validate_shapes.py
-
-      - name: Export TTL graph to DOT/SVG/PNG
-        run: |
-          python tools/export_instances_dot.py
-
-      - name: Export web JSON
-        run: |
-          python tools/export_web_json.py
-
-      - name: Verify WebVOWL availability
-        run: |
-          curl -I --fail https://service.tib.eu/webvowl/
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Build web (TS -> docs)
-        working-directory: web
-        run: |
-          npm ci
-          npm run build
+      - name: Run consolidated checks
+        run: make ci
+        env:
+          CI: true
 
       - name: Upload artifact (docs)
         if: ${{ env.ACT != 'true' }}

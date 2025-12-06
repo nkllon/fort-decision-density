@@ -161,3 +161,4 @@ web/node_modules/
 
 # Binary images
 *.png
+*.svg.new

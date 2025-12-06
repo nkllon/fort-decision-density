@@ -72,6 +72,14 @@ Use the existing lim42 agent prompt (`goblin-agent-lim42.md`) and weights to go 
 
 You can reproduce GitHub Actions locally in two ways:
 
+- Native tooling (fastest):
+
+```
+make ci
+```
+
+This runs SHACL validations (TTL + JSON-LD), DOT export + SVG compare, docs link checks, WebVOWL availability, JS package checks, and the Vite web build.
+
 1) Docker Compose (dev-friendly)
 
 - Build/run the same steps as CI:
@@ -83,9 +91,13 @@ make ci-docker
 - Or individual steps:
 
 ```
+docker compose run --rm python-sample-ttl
+docker compose run --rm python-sample-jsonld
 docker compose run --rm python-validate
 docker compose run --rm python-export
 docker compose run --rm dot-check
+docker compose run --rm docs-link
+docker compose run --rm webvowl-check
 docker compose run --rm js-package
 docker compose run --rm web-build
 ```
