@@ -9,7 +9,7 @@ This bundle contains:
 - `goblin-map.dot` — Graphviz DOT file for a "Goblin map" of common domains.
 - `goblin-agent-lim42.md` — lim42-ready agent spec for computing Goblin scores.
 - `goblin-energy-gradient.md` — energy gradient interpretation with simple flow equations.
-- Rendered `docs/goblin-map.svg` — quick visual of the Goblin map without requiring Graphviz (generate PNG locally with `dot -Tpng goblin-map.dot -o docs/goblin-map.png` if you prefer).
+- Rendered `docs/goblin-map.svg` — quick visual of the Goblin map without requiring Graphviz (generate a local PNG with `dot -Tpng goblin-map.dot -o docs/goblin-map.png` if you prefer; PNGs stay git-ignored).
 
 You can `pip install .` (or `pip install -e .` for development) to get the ontology, SHACL shapes, and validation helpers as a tiny Python package (`goblin-score`).
 Then validate data against the bundled shapes (after installation):
@@ -20,7 +20,7 @@ python -m goblin.validate --data samples/goblin-sample.ttl
 
 ## Quick links
 
-- Goblin map (rendered): see `docs/goblin-map.svg` and `docs/goblin-map.png`
+- Goblin map (rendered): see `docs/goblin-map.svg`
 - Ontology visualization (WebVOWL): open `docs/kg.html`
 
 ## Meme / Usage
@@ -41,7 +41,7 @@ The Goblin score is defined in the ontology as `ui:goblinScore` and is an alias 
 
 - Push this bundle into `nkllon/goblin` as initial commit.
 - Wire `goblin-agent-lim42.md` into lim42 as a reusable agent profile.
-- Render `goblin-map.dot` with Graphviz to produce a PNG/SVG for documentation. ✅
+- Render `goblin-map.dot` with Graphviz to produce an SVG for documentation (PNG optional locally). ✅
 
 ## Scoring workflow (lim42 example)
 
@@ -144,4 +144,4 @@ pre-commit run --all-files --hook-stage push --show-diff-on-failure
 ## Goblin map preview
 
 - [SVG](docs/goblin-map.svg) — scalable version from the DOT source (`goblin-map.dot`).
-- To produce a PNG locally (not checked into the repo), run `dot -Tpng goblin-map.dot -o docs/goblin-map.png`.
+- To produce a PNG locally for personal use (ignored by git), run `dot -Tpng goblin-map.dot -o docs/goblin-map.png`.

@@ -33,9 +33,7 @@ services:
       apt-get update &&
       apt-get install -y --no-install-recommends graphviz diffutils &&
       dot -Tsvg goblin-map.dot -o docs/goblin-map.svg.new &&
-      dot -Tpng goblin-map.dot -o docs/goblin-map.png.new &&
-      cmp -s docs/goblin-map.svg docs/goblin-map.svg.new &&
-      cmp -s docs/goblin-map.png docs/goblin-map.png.new"
+      cmp -s docs/goblin-map.svg docs/goblin-map.svg.new"
 
   js-package:
     image: node:20

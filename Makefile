@@ -9,10 +9,8 @@ python-export:
 
 dot-check:
 	@set -e; \
-	dot -Tsvg goblin-map.dot -o docs/goblin-map.svg.new; \
-	dot -Tpng goblin-map.dot -o docs/goblin-map.png.new; \
-	cmp -s docs/goblin-map.svg docs/goblin-map.svg.new; \
-	cmp -s docs/goblin-map.png docs/goblin-map.png.new
+		dot -Tsvg goblin-map.dot -o docs/goblin-map.svg.new; \
+		cmp -s docs/goblin-map.svg docs/goblin-map.svg.new
 
 js:
 	cd js/goblin-ontology && (npm ci || npm i) && npm run typecheck && npm run build && npm test
