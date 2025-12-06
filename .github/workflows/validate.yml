@@ -1,0 +1,39 @@
+name: Validate Ontology and Docs
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python-validate:
+    name: Python SHACL validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+      - name: Validate sample score JSON-LD
+        run: python tools/validate_sample_score.py
+      - name: Validate sample TTL data
+        run: python -m goblin.validate --data samples/goblin-sample.ttl
+  dot-check:
+    name: Render DOT and check committed artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+      - name: Check committed SVG
+        run: make dot-check
+  docs-link:
+    name: Verify docs links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check docs/kg.html references
+        run: make docs-link
